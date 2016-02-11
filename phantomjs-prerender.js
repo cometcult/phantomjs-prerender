@@ -4,7 +4,7 @@ var system = require('system');
 
 if (system.args.length < 3) {
     console.log("Missing arguments.");
-    phantom.exit();
+    phantom.exit(1);
 }
 
 var server = require('webserver').create();
@@ -51,7 +51,7 @@ var renderHtml = function (url, cb) {
     page.open(url);
 };
 
-server.listen(port, function (request, response) {
+var serverStarted = server.listen(port, function (request, response) {
     var extensionMatch = /.*\.(\w+)$/;
     var filesExtensions = /css|js|ico|png|jpg|jpeg|gif/;
 
@@ -76,5 +76,10 @@ server.listen(port, function (request, response) {
     });
 });
 
-console.log('Listening on ' + port + '...');
-console.log('Press Ctrl+C to stop.');
+if (serverStarted) {
+    console.log('Listening on ' + port + '...');
+    console.log('Press Ctrl+C to stop.');
+} else {
+    console.error('Could not start server on port: ' + port);
+    phantom.exit(1);
+}
